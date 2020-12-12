@@ -48,7 +48,7 @@ class ViewController: UIViewController {
                 view.backgroundColor = .black
                 do {
                     try dev.lockForConfiguration()
-                    dev.torchMode = isLightOn ? .on : .off
+                    dev.torchMode = isRealLightOn ? .on : .off
                     dev.unlockForConfiguration()
                 } catch {
                     print(error)
