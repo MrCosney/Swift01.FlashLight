@@ -10,76 +10,87 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    var backgroundColor = 0
-    var isRealLightOn = false
-    let button = UIButton(type: .system)
-    
-    override var prefersStatusBarHidden: Bool{
-        return true
-    }
-    
-    @objc func buttonAction(){
-        isRealLightOn.toggle()
-        if isRealLightOn{
-            button.setTitle("Torch Off", for: .normal)
-        } else {
-            button.setTitle("Torch On", for: .normal)
-        }
-        updateView()
-    }
-    
-    func createButton(){
-        button.frame = CGRect(x: self.view.frame.midX - self.view.frame.midX/2, y: self.view.frame.maxY - self.view.frame.midY/2, width: 200, height: 50)
-        button.backgroundColor = .black
-        button.setTitle("Torch On", for: .normal)
-        button.layer.cornerRadius = 25
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
-        button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
-        button.tintColor = .white
-        
-        self.view.addSubview(button)
-    }
-    
-    /// Control the Device Torch Status
-    func updateView() {
-            let device = AVCaptureDevice.default(for: AVMediaType.video)
-            
-            if let dev = device, dev.hasTorch {
-                do {
-                    try dev.lockForConfiguration()
-                    dev.torchMode = isRealLightOn ? .on : .off
-                    dev.unlockForConfiguration()
-                } catch {
-                    print(error)
-                }
-            } else {
-                print("Device Has No Torch.")
-            }
-        }
+    private var screenColorIndex = 0
+    private var isRealLightOn = false
+    private let button = UIButton(type: .system)
     
     override func viewDidLoad() {
         super.viewDidLoad()
         createButton()
         updateUI()
     }
-
-    fileprivate func updateUI() {
-        
-        switch backgroundColor {
-        case 1:
-            view.backgroundColor = .yellow
-        case 2:
-            view.backgroundColor = .green
-        default:
-            view.backgroundColor = .red
-        }
-        backgroundColor += 1
-        if backgroundColor == 3{
-            backgroundColor = 0
-        }
+    
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
+    override var shouldAutorotate: Bool {
+        return false
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         updateUI()
+    }
+    
+    @objc private func buttonAction() {
+        isRealLightOn.toggle()
+        setupRealLight()
+        
+        var title = ""
+        title = isRealLightOn ? "Torch Off": "Torch On"
+        button.setTitle(title, for: .normal)
+    }
+    
+    /// Create Button for control the Device Torch
+    private func createButton() {
+        let width: CGFloat = 200
+        let height: CGFloat = 50
+        
+        button.frame = CGRect(x: self.view.frame.midX - width / 2,
+                              y: self.view.frame.maxY - self.view.frame.midY/2,
+                              width: width,
+                              height: height)
+        button.backgroundColor = .black
+        button.setTitle("Torch On", for: .normal)
+        button.layer.cornerRadius = 25
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
+        button.addTarget(nil, action: #selector(buttonAction), for: .touchUpInside)
+        button.tintColor = .white
+        
+        self.view.addSubview(button)
+    }
+    
+    /// Control the Device Torch Status.
+    private func setupRealLight() {
+        let device = AVCaptureDevice.default(for: AVMediaType.video)
+        
+        if let dev = device, dev.hasTorch {
+            do {
+                try dev.lockForConfiguration()
+                dev.torchMode = isRealLightOn ? .on : .off
+                dev.unlockForConfiguration()
+            } catch {
+                print(error)
+            }
+        } else {
+            print("Device Has No Torch.")
+        }
+    }
+    
+    /// Update the Screen Color
+    fileprivate func updateUI() {
+        
+        switch screenColorIndex {
+        case 0: view.backgroundColor = .red
+        case 1: view.backgroundColor = .yellow
+        case 2: view.backgroundColor = .green
+        default:
+            break
+        }
+        
+        screenColorIndex += 1
+        if screenColorIndex == 3{
+            screenColorIndex = 0
+        }
     }
 }
