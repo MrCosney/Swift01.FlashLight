@@ -9,16 +9,11 @@ import AVFoundation
 import UIKit
 
 class ViewController: UIViewController {
+    // MARK: - Properties
     
     private var screenColorIndex = 0
     private var isRealLightOn = false
     private let button = UIButton(type: .system)
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        createButton()
-        updateUI()
-    }
     
     override var prefersStatusBarHidden: Bool {
         return true
@@ -28,10 +23,19 @@ class ViewController: UIViewController {
         return false
     }
     
+    // MARK: - Methods
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        createButton()
+        updateUI()
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         updateUI()
     }
     
+    /// Turn On/Off the Device Torch and Switch the Button Title.
     @objc private func buttonAction() {
         isRealLightOn.toggle()
         setupRealLight()
