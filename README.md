@@ -1,6 +1,6 @@
 # The Torch
 
-Simple application for manage screen Color and device Flashlight
+Simple application for manage the screen Color and device Flashlight
 
 ### Functional 
 
